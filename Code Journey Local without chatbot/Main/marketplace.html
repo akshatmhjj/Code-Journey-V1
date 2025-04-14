@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/src/project.css">
+    <title>Marketplace</title>
+    <link rel="icon" type="image/png" href="./Images/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="./Images/favicon.svg" />
+    <link rel="shortcut icon" href="./Images/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./Images/apple-touch-icon.png" />
+    <link rel="manifest" href="./Images/site.webmanifest" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom transitions for the mobile menu */
+        #mobile-menu {
+            transform: translateX(100%); /* Hidden initially */
+            transition: transform 0.3s ease-in-out;
+        }
+
+        #mobile-menu.open {
+            transform: translateX(0); /* Slide into view */
+        }
+
+        /* Transition for the product dropdown */
+        #mobile-product-dropdown {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        #mobile-product-dropdown.open {
+            max-height: 300px; /* Adjust based on content */
+        }
+
+        .sidebar {
+            width: 45vw;
+            max-width: 500px;
+            height: 100vh;
+            overflow-y: auto;
+            transition: transform 0.3s ease-in-out;
+        }
+        .sidebar-hidden {
+            transform: translateX(100%);
+        }
+        body.sidebar-open {
+            overflow: hidden;
+        }
+        .rotate-180 {
+            transform: rotate(180deg);
+        }
+        /* Smooth transition for collapsible sections */
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+        .collapsible-content.expanded {
+            max-height: 100px; /* Adjust according to content size */
+            padding-top: 8px;
+            padding-bottom: 8px;
+        }
+        .line-through {
+        text-decoration: line-through;
+        color: #888; /* Lighten color for completed tasks */
+        }
+
+        .progress-option {
+            cursor: pointer;
+        }
+
+        .progress-circle {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Styles for checked states with color persistence */
+        .progress-option input[type="radio"]:checked + .progress-circle {
+            background-color: var(--color-selected);
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Set specific colors for each progress state */
+        .progress-option:nth-child(1) input[type="radio"]:checked + .progress-circle {
+            background-color: #ef4444; /* Red for Not Started */
+        }
+
+        .progress-option:nth-child(2) input[type="radio"]:checked + .progress-circle {
+            background-color: #f59e0b; /* Yellow for Ongoing */
+        }
+
+        .progress-option:nth-child(3) input[type="radio"]:checked + .progress-circle {
+            background-color: #10b981; /* Green for Completed */
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="fixed top-0 inset-x-0 z-50 bg-transparent backdrop-blur-md shadow-md">
+    <nav class="mx-auto flex max-w-7xl items-center justify-between p-5 lg:px-8" aria-label="Global">
+        <div class="flex lg:flex-1">
+            <a href="index.html" class="-m-1.5 p-1.5">
+                <img class="h-12 w-auto transition-all scale-125 rounded-2xl" src="Images/CJ2.png" alt="Your Company">
+            </a>
+        </div>
+        <div class="flex lg:hidden">
+            <button id="mobile-menu-open" type="button" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-white">
+                <span class="sr-only">Open main menu</span>
+                <svg class="h-7 w-7 font-bold" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+            </button>
+        </div>
+        <div class="hidden lg:flex lg:gap-x-12">
+            <div class="relative">
+                <button id="product-button" type="button" class="flex items-center gap-x-1 text-md font-bold leading-6 text-blue-400  transition-all hover:scale-110">
+                    Tech Stack
+                    <svg class="h-5 w-5 flex-none text-blue-400 transition-all hover:scale-110" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                </svg>
+                </button>
+        <div id="product-menu" class="absolute -left-8 top-full z-10 mt-3 w-screen max-w-md overflow-hidden rounded-xl bg-gray-100 shadow-lg ring-1 ring-gray-900/5 opacity-0 translate-y-1 transition-all duration-200 ease-out pointer-events-none">
+            <div class="p-4">
+                <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-300 transition-all transition-all">
+                    <div class="flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
+                    <svg class="h-6 w-6 text-gray-600 group-hover:text-orange-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" />
+                    </svg>
+                    </div>
+                    <div class="flex-auto">
+                    <a href="html.html" class="block font-semibold text-black">
+                        HTML (HyperText Markup Language)
+                        <span class="absolute inset-0"></span>
+                    </a>
+                    <p class="mt-1 text-gray-900">Structure web pages with content</p>
+                </div>
+            </div>
+            <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-300 transition-all transition-all">
+                <div class="flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
+                <svg class="h-6 w-6 text-gray-600 group-hover:text-blue-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 16.875h3.375m0 0h3.375m-3.375 0V13.5m0 3.375v3.375M6 10.5h2.25a2.25 2.25 0 0 0 2.25-2.25V6a2.25 2.25 0 0 0-2.25-2.25H6A2.25 2.25 0 0 0 3.75 6v2.25A2.25 2.25 0 0 0 6 10.5Zm0 9.75h2.25A2.25 2.25 0 0 0 10.5 18v-2.25a2.25 2.25 0 0 0-2.25-2.25H6a2.25 2.25 0 0 0-2.25 2.25V18A2.25 2.25 0 0 0 6 20.25Zm9.75-9.75H18a2.25 2.25 0 0 0 2.25-2.25V6A2.25 2.25 0 0 0 18 3.75h-2.25A2.25 2.25 0 0 0 13.5 6v2.25a2.25 2.25 0 0 0 2.25 2.25Z" />
+                </svg>
+                </div>
+                <div class="flex-auto">
+                <a href="css.html" class="block font-semibold text-black">
+                    CSS (Cascading Style Sheets)
+                    <span class="absolute inset-0"></span>
+                </a>
+                <p class="mt-1 text-gray-900">Style and design web page elements</p>
+                </div>
+            </div>
+            
+            <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-300 transition-all transition-all">
+                <div class="flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
+                    <svg class="h-6 w-6 text-gray-600 group-hover:text-yellow-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.042 21.672 13.684 16.6m0 0-2.51 2.225.569-9.47 5.227 7.917-3.286-.672ZM12 2.25V4.5m5.834.166-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243-1.59-1.59" />
+                    </svg>
+                </div>
+                <div class="flex-auto">
+                <a href="js.html" class="block font-semibold text-black">
+                    JavaScript (JS)
+                    <span class="absolute inset-0"></span>
+                </a>
+                <p class="mt-1 text-gray-900">Store, manage, and retrieve data</p>
+                </div>
+            </div>
+            <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-300 transition-all transition-all">
+                <div class="flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
+                <svg class="h-6 w-6 text-gray-600 group-hover:text-green-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.864 4.243A7.5 7.5 0 0 1 19.5 10.5c0 2.92-.556 5.709-1.568 8.268M5.742 6.364A7.465 7.465 0 0 0 4.5 10.5a7.464 7.464 0 0 1-1.15 3.993m1.989 3.559A11.209 11.209 0 0 0 8.25 10.5a3.75 3.75 0 1 1 7.5 0c0 .527-.021 1.049-.064 1.565M12 10.5a14.94 14.94 0 0 1-3.6 9.75m6.633-4.596a18.666 18.666 0 0 1-2.485 5.33" />
+                </svg>
+                </div>
+                <div class="flex-auto">
+                <a href="db.html" class="block font-semibold text-black">
+                    Databases (DB)
+                    <span class="absolute inset-0"></span>
+                </a>
+                <p class="mt-1 text-gray-900">Store, manage, and retrieve data</p>
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+
+        <a href="roadmap.html" class="text-md font-bold leading-6 text-blue-400 transition-all hover:scale-110">Roadmap</a>
+        <a href="marketplace.html" class="text-md font-bold leading-6 text-blue-400 transition-all hover:scale-110">Marketplace</a>
+        <a href="company.html" class="text-md font-bold leading-6 text-blue-400 transition-all hover:scale-110">Company</a>
+    </div>
+
+    <!-- Dashboard -->
+
+    <div class=" hidden lg:flex lg:flex-1 lg:justify-end">
+        <a href="dashboard.html">
+            <button id="profileButton" class="top-6 right-6 rounded-full p-3 cursor-pointer font-bold leading-6  hover:text-blue-400 transition-all hover:scale-110  ">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 transition-all w-7 text-blue-400" fill="currentColor" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 12c2.5 0 4.5-2 4.5-4.5S14.5 3 12 3 7.5 5 7.5 7.5 9.5 12 12 12z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 14c-5 0-8.5 3-8.5 4.5V21h17v-2.5c0-1.5-3.5-4.5-8.5-4.5z" />
+                </svg>
+            </button>
+        </a>
+        
+    </div>
+    
+    
+    </nav>
+    
+    <!-- Mobile menu with slide-in transition -->
+    <div id="mobile-menu" class="lg:hidden fixed inset-0 z-10 w-full bg-gray-400 px-6 py-6 transform translate-x-full transition-transform duration-300 ease-in-out">
+        <div class="flex items-center justify-between">
+        <a href="index.html" class="-m-1.5 p-1.5">
+            <span class="sr-only">Your Company</span>
+            <img class="h-8 w-auto transition-all scale-125 rounded-2xl" src="Images/CJ2.png" alt="Your Company">
+        </a>
+        <button id="mobile-menu-close" type="button" class="-m-2.5 rounded-md p-2.5 text-gray-700">
+            <span class="sr-only">Close menu</span>
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        </div>
+        <div class="mt-6 flow-root">
+        <div class="-my-6 divide-y divide-gray-500/10">
+            <div class="space-y-2 py-6">
+            <div class="-mx-3">
+                <button id="mobile-product-button" type="button" class="flex w-full items-center rounded-lg py-2 pl-3 pr-3.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-200 transition-all">
+                    <span class="mr-2">Tech Stack</span>
+                    <svg class="h-5 w-5 flex-none" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+
+                <!-- Product dropdown in mobile menu -->
+                <div id="mobile-product-dropdown" class="ml-6 space-y-2">
+                    <a href="html.html" class="block text-base font-semibold leading-7 text-gray-900 transition-all hover:text-orange-500 hover:px-1">HTML</a>
+                    <a href="css.html" class="block text-base font-semibold leading-7 text-gray-900 transition-all hover:text-blue-500 hover:px-1">CSS</a>
+                    <a href="js.html" class="block text-base font-semibold leading-7 text-gray-900 transition-all hover:text-yellow-500 hover:px-1">JavaScript</a>
+                    <a href="db.html" class="block text-base font-semibold leading-7 text-gray-900 transition-all hover:text-green-500 hover:px-1">Databases</a>
+                </div>
+            </div>
+            <a href="roadmap.html" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-200 transition-all ">Roadmap</a>
+            <a href="marketplace.html" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-200 transition-all ">Marketplace</a>
+            <a href="company.html" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-200 transition-all ">Company</a>
+            </div>
+            <div class="py-6">
+                <a href="dashboard.html" id="loginLink" class="cursor-pointer -mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-200 transition-all">
+                    Dashboard<span aria-hidden="true">&rarr;</span>
+                </a>
+            </div>
+        </div>
+        </div>
+    </div>
+</header>
+<!-- Header Ends-->
+
+<!-- Section -->
+<div class="w-[90%] mx-auto mt-32">
+    
+    <div class="text-center mb-12 relative overflow-hidden p-8 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-300 rounded-lg shadow-lg mt-12">
+        <h1 class="text-4xl font-extrabold text-gray-800 mb-4">Marketplace: Top Trending Programming Languages</h1>
+        <p class="text-gray-600 text-lg font-medium mb-6">Explore the top programming languages in demand.</p>
+
+        <div class="absolute top-0 left-0 w-24 h-24 bg-blue-300 rounded-full opacity-40 transform -translate-x-8 -translate-y-8"></div>
+        <div class="absolute bottom-0 right-0 w-24 h-24 bg-pink-300 rounded-full opacity-40 transform translate-x-8 translate-y-8"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-10">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-40 h-40 text-gray-300" viewBox="0 0 24 24">
+                <path d="M12 0l-1.485 16.172-4.387 1.235-.338-3.867h-2.25l.666 7.46 7.794 2.251 7.787-2.251.994-11.18h-10.781l.298-3.505h11.031v-6.315z"/>
+            </svg>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-6xl mx-auto p-6 space-y-12 mb-12">
+
+    
+        <!-- Language Sections -->
+
+        <!-- Python -->
+        <div class="relative bg-gradient-to-r from-purple-300 via-pink-400 to-red-400 p-6 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all transition-shadow mb-6">
+            <div class="absolute inset-0 bg-white bg-opacity-20 blur-lg rounded-xl"></div>
+            <div class="relative z-10 flex flex-col items-center text-center">
+                <svg width="24px" height="24px" class="w-24 h-24 mb-4 rounded-full " viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        
+                    <title>python [#127]</title>
+                    <desc>Created with Sketch.</desc>
+                    <defs>
+                
+                </defs>
+                    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                        <g id="Dribbble-Light-Preview" transform="translate(-340.000000, -7599.000000)" fill="#000000">
+                            <g id="icons" transform="translate(56.000000, 160.000000)">
+                                <path d="M296.744,7457.45798 C296.262,7457.45798 295.872,7457.06594 295.872,7456.58142 C295.872,7456.0969 296.262,7455.70587 296.744,7455.70587 C297.226,7455.70587 297.616,7456.0969 297.616,7456.58142 C297.616,7457.06594 297.226,7457.45798 296.744,7457.45798 M294.072,7459 C299.15,7459 298.833,7456.78649 298.833,7456.78649 L298.827,7454.49357 L293.982,7454.49357 L293.982,7453.80499 L300.751,7453.80499 C300.751,7453.80499 304,7454.17591 304,7449.02614 C304,7443.87636 301.165,7444.0583 301.165,7444.0583 L299.472,7444.0583 L299.472,7446.44873 C299.472,7446.44873 299.563,7449.29855 296.682,7449.29855 L291.876,7449.29855 C291.876,7449.29855 289.176,7449.25533 289.176,7451.9222 L289.176,7456.33112 C289.176,7456.33112 288.766,7459 294.072,7459 M291.257,7440.54202 C291.739,7440.54202 292.128,7440.93406 292.128,7441.41858 C292.128,7441.9031 291.739,7442.29413 291.257,7442.29413 C290.775,7442.29413 290.385,7441.9031 290.385,7441.41858 C290.385,7440.93406 290.775,7440.54202 291.257,7440.54202 M293.928,7439 C288.851,7439 289.168,7441.21351 289.168,7441.21351 L289.174,7443.50643 L294.019,7443.50643 L294.019,7444.19501 L287.249,7444.19501 C287.249,7444.19501 284,7443.82409 284,7448.97386 C284,7454.12364 286.836,7453.9417 286.836,7453.9417 L288.528,7453.9417 L288.528,7451.55127 C288.528,7451.55127 288.437,7448.70145 291.319,7448.70145 L296.124,7448.70145 C296.124,7448.70145 298.824,7448.74467 298.824,7446.0778 L298.824,7441.66888 C298.824,7441.66888 299.234,7439 293.928,7439" id="python-[#127]">
+                
+                </path>
+                            </g>
+                        </g>
+                    </g>
+                </svg>
+                <h2 class="text-4xl font-bold text-gray-800 mb-3">Python Programming</h2>
+                <p class="text-gray-700text-opacity-90 font-semibold cursor-pointer hover:text-black transition-all leading-relaxed mb-6">
+                    Dive into Python, the powerhouse of web, data science, AI, and beyond. Clean syntax and endless possibilities await.
+                </p>
+                <div class="flex gap-4">
+                    <a href="https://docs.python.org" 
+                    target="_blank" 
+                    class="py-3 px-6 bg-white text-purple-600 font-semibold rounded-full shadow-md hover:bg-purple-100 transition">
+                    Documentation
+                    </a>
+                    <a href="https://www.w3schools.com/python/" 
+                    target="_blank" 
+                    class="py-3 px-6 bg-white text-red-600 font-semibold rounded-full shadow-md hover:bg-red-100 transition">
+                    Study Resource
+                    </a>
+                </div>
+            </div>
+        </div>    
+
+        <!-- JavaScript -->
+        <div class="relative bg-gradient-to-r from-yellow-300 via-orange-400 to-red-400 p-6 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all transition-shadow mb-6">
+            <div class="absolute inset-0 bg-white bg-opacity-30 blur-lg rounded-xl"></div>
+            <div class="relative z-10 flex flex-col items-center text-center">
+                <svg width="23px" height="23px" class="w-24 h-24 mb-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="nonzero" clip-rule="nonzero" d="M0 1.75C0 0.783501 0.783502 0 1.75 0H14.25C15.2165 0 16 0.783502 16 1.75V3.75C16 4.16421 15.6642 4.5 15.25 4.5C14.8358 4.5 14.5 4.16421 14.5 3.75V1.75C14.5 1.61193 14.3881 1.5 14.25 1.5H1.75C1.61193 1.5 1.5 1.61193 1.5 1.75V14.25C1.5 14.3881 1.61193 14.5 1.75 14.5H15.25C15.6642 14.5 16 14.8358 16 15.25C16 15.6642 15.6642 16 15.25 16H1.75C0.783501 16 0 15.2165 0 14.25V1.75ZM8.25 5.75C8.66421 5.75 9 6.08579 9 6.5V10.5C9 11.5048 8.72399 12.2584 8.15514 12.7324C7.61223 13.1848 6.95384 13.25 6.5 13.25C6.08579 13.25 5.75 12.9142 5.75 12.5C5.75 12.0858 6.08579 11.75 6.5 11.75C6.84617 11.75 7.06277 11.6902 7.19486 11.5801C7.301 11.4916 7.5 11.2452 7.5 10.5V6.5C7.5 6.08579 7.83578 5.75 8.25 5.75ZM11.2757 6.58011C11.6944 6.08164 12.3507 5.75 13.25 5.75C14.0849 5.75 14.7148 6.03567 15.1394 6.48481C15.4239 6.78583 15.4105 7.26052 15.1095 7.54505C14.8085 7.82958 14.3338 7.81621 14.0493 7.51519C13.9394 7.39898 13.7204 7.25 13.25 7.25C12.7493 7.25 12.5306 7.41836 12.4243 7.54489C12.2934 7.70065 12.25 7.896 12.25 8C12.25 8.104 12.2934 8.29935 12.4243 8.45511C12.5306 8.58164 12.7493 8.75 13.25 8.75C13.3257 8.75 13.3988 8.76121 13.4676 8.78207C14.1307 8.87646 14.6319 9.17251 14.9743 9.58011C15.3684 10.0493 15.5 10.604 15.5 11C15.5 11.396 15.3684 11.9507 14.9743 12.4199C14.5556 12.9184 13.8993 13.25 13 13.25C12.1651 13.25 11.5352 12.9643 11.1106 12.5152C10.8261 12.2142 10.8395 11.7395 11.1405 11.4549C11.4415 11.1704 11.9162 11.1838 12.2007 11.4848C12.3106 11.601 12.5296 11.75 13 11.75C13.5007 11.75 13.7194 11.5816 13.8257 11.4551C13.9566 11.2993 14 11.104 14 11C14 10.896 13.9566 10.7007 13.8257 10.5449C13.7194 10.4184 13.5007 10.25 13 10.25C12.9243 10.25 12.8512 10.2388 12.7824 10.2179C12.1193 10.1235 11.6181 9.82749 11.2757 9.41989C10.8816 8.95065 10.75 8.396 10.75 8C10.75 7.604 10.8816 7.04935 11.2757 6.58011Z" fill="#000000"/>
+                    </svg>
+                <h2 class="text-4xl font-bold text-gray-800 mb-3">JavaScript Programming</h2>
+                <p class="text-gray-700 font-semibold cursor-pointer hover:text-black transition-all leading-relaxed mb-6">
+                    Discover JavaScript, the backbone of modern web development. Create dynamic, interactive websites and applications with ease.
+                </p>
+                <div class="flex gap-4">
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" 
+                    target="_blank" 
+                    class="py-3 px-6 bg-white text-yellow-600 font-semibold rounded-full shadow-md hover:bg-yellow-100 transition">
+                    Documentation
+                    </a>
+                    <a href="js.html" 
+                    target="_self" 
+                    class="py-3 px-6 bg-white text-red-600 font-semibold rounded-full shadow-md hover:bg-red-100 transition">
+                    Study Resource
+                    </a>
+                </div>
+            </div>
+        </div>    
+
+        <!-- Java -->
+        <div class="relative bg-gradient-to-r from-green-300 via-blue-300 to-indigo-300 p-6 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all transition-shadow mb-6">
+            <div class="absolute inset-0 bg-white bg-opacity-30 blur-lg rounded-xl"></div>
+            <div class="relative z-10 flex flex-col items-center text-center">
+                <svg width="24px" height="24px" class="w-24 h-24 mb-4" viewBox="-118.513 4.399 540.906 540.906" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M285.104 430.945h-2.037v-1.14h5.486v1.14h-2.025v5.688h-1.424v-5.688zm10.942.297h-.032l-2.02 5.393h-.924l-2.006-5.393h-.024v5.393h-1.343v-6.828h1.976l1.86 4.835 1.854-4.835h1.969v6.828h-1.311l.001-5.393z" fill="#e76f00"/>
+                    <path d="M102.681 291.324s-14.178 8.245 10.09 11.035c29.4 3.354 44.426 2.873 76.825-3.259 0 0 8.518 5.341 20.414 9.967-72.63 31.128-164.376-1.803-107.329-17.743M93.806 250.704s-15.902 11.771 8.384 14.283c31.406 3.24 56.208 3.505 99.125-4.759 0 0 5.937 6.018 15.271 9.309-87.815 25.678-185.624 2.025-122.78-18.833" fill="#5382a1"/>
+                    <path d="M168.625 181.799c17.896 20.604-4.701 39.146-4.701 39.146s45.439-23.458 24.571-52.833c-19.491-27.395-34.438-41.005 46.479-87.934.001-.001-127.013 31.721-66.349 101.621" fill="#e76f00"/>
+                    <path d="M264.684 321.369s10.492 8.646-11.555 15.333c-41.923 12.7-174.488 16.535-211.314.507-13.238-5.76 11.587-13.752 19.396-15.429 8.144-1.766 12.798-1.437 12.798-1.437-14.722-10.371-95.157 20.363-40.857 29.166 148.084 24.015 269.944-10.814 231.532-28.14M109.499 208.617s-67.431 16.016-23.879 21.832c18.389 2.462 55.047 1.905 89.192-.956 27.906-2.354 55.928-7.358 55.928-7.358s-9.84 4.214-16.959 9.074c-68.475 18.01-200.756 9.631-162.674-8.79 32.206-15.568 58.392-13.802 58.392-13.802M230.462 276.231c69.608-36.171 37.425-70.932 14.96-66.248-5.506 1.146-7.961 2.139-7.961 2.139s2.045-3.202 5.947-4.588c44.441-15.624 78.619 46.081-14.346 70.521 0 0 1.079-.962 1.4-1.824" fill="#5382a1"/>
+                    <path d="M188.495 4.399s38.55 38.562-36.563 97.862c-60.233 47.567-13.735 74.689-.025 105.678-35.158-31.723-60.96-59.647-43.65-85.637 25.406-38.151 95.792-56.648 80.238-117.903" fill="#e76f00"/><path d="M116.339 374.246c66.815 4.277 169.417-2.373 171.846-33.987 0 0-4.67 11.984-55.219 21.503-57.027 10.731-127.364 9.479-169.081 2.601.002-.002 8.541 7.067 52.454 9.883" fill="#5382a1"/><path d="M105.389 495.049c-6.303 5.467-12.96 8.536-18.934 8.536-8.527 0-13.134-5.113-13.134-13.314 0-8.871 4.937-15.357 24.739-15.357h7.328l.001 20.135m17.392 19.623V453.93c0-15.518-8.85-25.756-30.188-25.756-12.457 0-23.369 3.076-32.238 6.999l2.56 10.752c6.983-2.563 16.022-4.949 24.894-4.949 12.292 0 17.58 4.949 17.58 15.181v7.678h-6.135c-29.865 0-43.337 11.593-43.337 28.993 0 15.018 8.878 23.554 25.594 23.554 10.745 0 18.766-4.437 26.264-10.929l1.361 9.221 13.645-.002zM180.824 514.672h-21.691l-26.106-84.96h18.944l16.198 52.199 3.601 15.699c8.195-22.698 13.992-45.726 16.891-67.898h18.427c-4.938 27.976-13.822 58.684-26.264 84.96M264.038 495.049c-6.315 5.467-12.983 8.536-18.958 8.536-8.512 0-13.131-5.113-13.131-13.314 0-8.871 4.947-15.357 24.748-15.357h7.341v20.135m17.39 19.623V453.93c0-15.518-8.871-25.756-30.186-25.756-12.465 0-23.381 3.076-32.246 6.999l2.557 10.752c6.985-2.563 16.041-4.949 24.906-4.949 12.283 0 17.579 4.949 17.579 15.181v7.678h-6.146c-29.873 0-43.34 11.593-43.34 28.993 0 15.018 8.871 23.554 25.584 23.554 10.752 0 18.77-4.437 26.28-10.929l1.366 9.221 13.646-.002zM36.847 529.099c-4.958 7.239-12.966 12.966-21.733 16.206L6.527 535.2c6.673-3.424 12.396-8.954 15.055-14.104 2.3-4.581 3.252-10.485 3.252-24.604v-96.995h18.478v95.666c-.001 18.875-1.51 26.5-6.465 33.936" fill="#e76f00"/>
+                </svg>
+                <h2 class="text-4xl font-bold text-gray-800 mb-3">Java Programming</h2>
+                <p class="text-gray-700 font-semibold cursor-pointer hover:text-black transition-all leading-relaxed mb-6">
+                    Explore Java, the reliable and versatile programming language. From enterprise solutions to Android apps, Java powers it all.
+                </p>
+                <div class="flex gap-4">
+                    <a href="https://docs.oracle.com/javase/8/docs/" 
+                    target="_blank" 
+                    class="py-3 px-6 bg-white text-green-600 font-semibold rounded-full shadow-md hover:bg-green-100 transition">
+                    Documentation
+                    </a>
+                    <a href="https://www.w3schools.com/java/" 
+                    target="_blank" 
+                    class="py-3 px-6 bg-white text-blue-600 font-semibold rounded-full shadow-md hover:bg-blue-100 transition">
+                    Study Resource
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- C# -->
+        <div class="relative bg-gradient-to-r from-purple-300 via-indigo-300 to-blue-300 p-6 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all transition-shadow mb-6">
+            <div class="absolute inset-0 bg-white bg-opacity-30 blur-lg rounded-xl"></div>
+            <div class="relative z-10 flex flex-col items-center text-center">
+                <svg width="24px" height="24px" class="w-24 h-24 mb-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="nonzero" clip-rule="nonzero" d="M7.00017 5.5C5.61936 5.5 4.5 6.61936 4.5 8.00017C4.5 9.38097 5.61936 10.5003 7.00017 10.5003C7.71226 10.5003 8.3538 10.2036 8.81009 9.725C9.09591 9.4252 9.57065 9.41386 9.87045 9.69968C10.1703 9.9855 10.1816 10.4602 9.89577 10.76C9.16817 11.5232 8.13926 12.0003 7.00017 12.0003C4.79094 12.0003 3 10.2094 3 8.00017C3 5.79094 4.79094 4 7.00017 4C8.13445 4 9.15952 4.47309 9.88658 5.23069C10.1734 5.52954 10.1636 6.00432 9.86477 6.29112C9.56591 6.57793 9.09114 6.56817 8.80433 6.26931C8.3484 5.79424 7.70928 5.5 7.00017 5.5Z" fill="#000000"/>
+                    <path fill-rule="nonzero" clip-rule="nonzero" d="M6.58638 0.102166C6.8199 -0.0340553 7.10867 -0.0340553 7.34219 0.102166L12.0565 2.85217C12.4143 3.06088 12.5351 3.52011 12.3264 3.8779C12.1177 4.23569 11.6585 4.35654 11.3007 4.14783L6.96429 1.61828L1.5 4.80578V11.1942L6.96429 14.3817L11.3007 11.8522C11.6585 11.6435 12.1177 11.7643 12.3264 12.1221C12.5351 12.4799 12.4143 12.9391 12.0565 13.1478L7.34219 15.8978C7.10867 16.0341 6.8199 16.0341 6.58638 15.8978L0.372097 12.2728C0.141683 12.1384 0 11.8918 0 11.625V4.375C0 4.10825 0.141683 3.86157 0.372097 3.72717L6.58638 0.102166Z" fill="#000000"/>
+                    <path fill-rule="nonzero" clip-rule="nonzero" d="M12.1799 5.25C12.456 5.25 12.6799 5.47386 12.6799 5.75V10.25C12.6799 10.5261 12.456 10.75 12.1799 10.75C11.9038 10.75 11.6799 10.5261 11.6799 10.25V5.75C11.6799 5.47386 11.9038 5.25 12.1799 5.25Z" fill="#000000"/>
+                    <path fill-rule="nonzero" clip-rule="nonzero" d="M14.3201 5.25C14.5962 5.25 14.8201 5.47386 14.8201 5.75V10.25C14.8201 10.5261 14.5962 10.75 14.3201 10.75C14.044 10.75 13.8201 10.5261 13.8201 10.25V5.75C13.8201 5.47386 14.044 5.25 14.3201 5.25Z" fill="#000000"/>
+                    <path fill-rule="nonzero" clip-rule="nonzero" d="M10.5 6.92993C10.5 6.65379 10.7239 6.42993 11 6.42993H15.5C15.7761 6.42993 16 6.65379 16 6.92993C16 7.20607 15.7761 7.42993 15.5 7.42993H11C10.7239 7.42993 10.5 7.20607 10.5 6.92993Z" fill="#000000"/>
+                    <path fill-rule="nonzero" clip-rule="nonzero" d="M10.5 9.07007C10.5 8.79393 10.7239 8.57007 11 8.57007H15.5C15.7761 8.57007 16 8.79393 16 9.07007C16 9.34621 15.7761 9.57007 15.5 9.57007H11C10.7239 9.57007 10.5 9.34621 10.5 9.07007Z" fill="#000000"/>
+                    </svg>
+                <h2 class="text-4xl font-bold text-gray-800 mb-3">C# Programming</h2>
+                <p class="text-gray-700 font-semibold cursor-pointer hover:text-black transition-all leading-relaxed mb-6">
+                    Learn C#, a powerful and versatile language for building robust applications, games, and enterprise software with .NET.
+                </p>
+                <div class="flex gap-4">
+                    <a href="https://learn.microsoft.com/en-us/dotnet/csharp/" 
+                    target="_blank" 
+                    class="py-3 px-6 bg-white text-purple-600 font-semibold rounded-full shadow-md hover:bg-purple-100 transition">
+                    Documentation
+                    </a>
+                    <a href="https://www.w3schools.com/cs/" 
+                    target="_blank" 
+                    class="py-3 px-6 bg-white text-blue-600 font-semibold rounded-full shadow-md hover:bg-blue-100 transition">
+                    Study Resource
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- C++ -->
+        <div class="relative bg-gradient-to-r from-gray-300 via-blue-300 to-cyan-300 p-6 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all transition-shadow mb-6">
+            <div class="absolute inset-0 bg-white bg-opacity-30 blur-lg rounded-xl"></div>
+            <div class="relative z-10 flex flex-col items-center text-center">
+                <svg width="24px" height="24px" class="w-24 h-24 mb-4" viewBox="0 0 256 288" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin meet">
+                    <path d="M255.569 84.72c-.002-4.83-1.035-9.098-3.124-12.761-2.052-3.602-5.125-6.621-9.247-9.008-34.025-19.619-68.083-39.178-102.097-58.817-9.17-5.294-18.061-5.101-27.163.269C100.395 12.39 32.59 51.237 12.385 62.94 4.064 67.757.015 75.129.013 84.711 0 124.166.013 163.62 0 203.076c.002 4.724.991 8.909 2.988 12.517 2.053 3.711 5.169 6.813 9.386 9.254 20.206 11.703 88.02 50.547 101.56 58.536 9.106 5.373 17.997 5.565 27.17.269 34.015-19.64 68.075-39.198 102.105-58.817 4.217-2.44 7.333-5.544 9.386-9.252 1.994-3.608 2.985-7.793 2.987-12.518 0 0 0-78.889-.013-118.345" fill="#5C8DBC"/>
+                    <path d="M128.182 143.509L2.988 215.593c2.053 3.711 5.169 6.813 9.386 9.254 20.206 11.703 88.02 50.547 101.56 58.536 9.106 5.373 17.997 5.565 27.17.269 34.015-19.64 68.075-39.198 102.105-58.817 4.217-2.44 7.333-5.544 9.386-9.252l-124.413-72.074" fill="#1A4674"/>
+                    <path d="M91.101 164.861c7.285 12.718 20.98 21.296 36.69 21.296 15.807 0 29.58-8.687 36.828-21.541l-36.437-21.107-37.081 21.352" fill="#1A4674"/>
+                    <path d="M255.569 84.72c-.002-4.83-1.035-9.098-3.124-12.761l-124.263 71.55 124.413 72.074c1.994-3.608 2.985-7.793 2.987-12.518 0 0 0-78.889-.013-118.345" fill="#1B598E"/><path d="M248.728 148.661h-9.722v9.724h-9.724v-9.724h-9.721v-9.721h9.721v-9.722h9.724v9.722h9.722v9.721M213.253 148.661h-9.721v9.724h-9.722v-9.724h-9.722v-9.721h9.722v-9.722h9.722v9.722h9.721v9.721" fill="#FFF"/>
+                    <path d="M164.619 164.616c-7.248 12.854-21.021 21.541-36.828 21.541-15.71 0-29.405-8.578-36.69-21.296a42.062 42.062 0 0 1-5.574-20.968c0-23.341 18.923-42.263 42.264-42.263 15.609 0 29.232 8.471 36.553 21.059l36.941-21.272c-14.683-25.346-42.096-42.398-73.494-42.398-46.876 0-84.875 38-84.875 84.874 0 15.378 4.091 29.799 11.241 42.238 14.646 25.48 42.137 42.637 73.634 42.637 31.555 0 59.089-17.226 73.714-42.781l-36.886-21.371" fill="#FFF"/>
+                    </svg>
+                <h2 class="text-4xl font-bold text-gray-800 mb-3">C++ Programming</h2>
+                <p class="text-gray-700 font-semibold cursor-pointer hover:text-black transition-all leading-relaxed mb-6">
+                    Master C++, the language of choice for high-performance applications. Build efficient systems, games, and more with its robust features.
+                </p>
+                <div class="flex gap-4">
+                    <a href="https://cplusplus.com/doc/" 
+                    target="_blank" 
+                    class="py-3 px-6 bg-white text-blue-600 font-semibold rounded-full shadow-md hover:bg-blue-100 transition">
+                    Documentation
+                    </a>
+                    <a href="https://www.w3schools.com/cpp/" 
+                    target="_blank" 
+                    class="py-3 px-6 bg-white text-cyan-600 font-semibold rounded-full shadow-md hover:bg-cyan-100 transition">
+                    Study Resource
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+
+        <!-- Go -->
+        <div class="relative bg-gradient-to-r from-teal-300 via-blue-300 to-sky-300 p-6 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all transition-shadow mb-6">
+            <div class="absolute inset-0 bg-white bg-opacity-30 blur-lg rounded-xl"></div>
+            <div class="relative z-10 flex flex-col items-center text-center">
+                <svg width="24px" height="24px" class="w-24 h-24 mb-4" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M18.1177 14.0442C17.7408 14.1497 17.3586 14.2566 16.9162 14.3768C16.7001 14.438 16.6509 14.4519 16.4498 14.2074C16.2086 13.9194 16.0317 13.7331 15.6939 13.5636C14.6807 13.0384 13.6996 13.1909 12.7829 13.8178C11.6893 14.5632 11.1264 15.6644 11.1425 17.0367C11.1585 18.3921 12.0431 19.5103 13.3137 19.6966C14.4073 19.8491 15.324 19.4425 16.0477 18.5785C16.1924 18.3922 16.3212 18.1887 16.482 17.9516H13.378C13.0402 17.9516 12.9598 17.7314 13.0724 17.4433C13.2815 16.9181 13.6675 16.0372 13.8926 15.5967C13.9409 15.495 14.0535 15.3256 14.2947 15.3256H19.4702C19.7027 14.5496 20.0799 13.8164 20.5831 13.1226C21.7572 11.4961 23.1725 10.649 25.0863 10.2933C26.7268 9.9883 28.2707 10.1577 29.6699 11.1573C30.9405 12.0722 31.7285 13.3089 31.9376 14.9354C32.211 17.2225 31.5838 19.0862 30.0881 20.6787C29.0266 21.8138 27.7239 22.5254 26.2282 22.8473C25.9429 22.9029 25.6576 22.9293 25.3768 22.9553C25.2303 22.9689 25.085 22.9823 24.9416 22.9998C23.478 22.9659 22.1432 22.5254 21.0173 21.5089C20.2256 20.7879 19.6803 19.9019 19.4092 18.8705C19.2211 19.2707 18.9962 19.6539 18.7336 20.0185C17.5756 21.628 16.0638 22.6276 14.15 22.8987C12.5738 23.1189 11.1103 22.797 9.82366 21.7805C8.63353 20.8317 7.95805 19.578 7.78114 18.0194C7.57206 16.1727 8.08671 14.5124 9.14818 13.0554C10.2901 11.4798 11.8019 10.4802 13.6514 10.1244C15.1632 9.8364 16.6106 10.0228 17.9134 10.9546C18.7657 11.5475 19.3769 12.3608 19.779 13.3434C19.8755 13.4959 19.8111 13.5806 19.6181 13.6314C19.0545 13.7822 18.5903 13.9121 18.1177 14.0442ZM28.7581 15.974C28.7613 16.0309 28.7646 16.0909 28.7693 16.1552C28.6889 17.6122 27.9973 18.6965 26.7268 19.3911C25.8744 19.8485 24.9898 19.8994 24.1053 19.4928C22.9473 18.9506 22.3361 17.6122 22.6256 16.2907C22.9795 14.6982 23.9444 13.6986 25.4401 13.3428C26.968 12.9701 28.4316 13.9188 28.7211 15.5961C28.7438 15.7161 28.7505 15.836 28.7581 15.974Z" fill="#00ACD7"/>
+                    <path d="M2.44461 13.8517C2.41244 13.9025 2.42852 13.9364 2.49285 13.9364L7.2826 13.9534C7.33085 13.9534 7.41126 13.9025 7.44343 13.8517L7.71684 13.4112C7.749 13.3604 7.73292 13.3096 7.66859 13.3096H2.95926C2.89493 13.3096 2.81451 13.3435 2.78235 13.3943L2.44461 13.8517Z" fill="#00ACD7"/>
+                    <path d="M0.0160829 15.4103C-0.0160829 15.4611 7.45058e-09 15.495 0.0643316 15.495L6.63928 15.4781C6.70361 15.4781 6.76794 15.4442 6.78402 15.3764L6.91269 14.9698C6.92877 14.919 6.8966 14.8682 6.83227 14.8682H0.530735C0.466404 14.8682 0.385989 14.902 0.353823 14.9529L0.0160829 15.4103Z" fill="#00ACD7"/>
+                    <path d="M3.90813 16.9521C3.87596 17.0029 3.89204 17.0537 3.95638 17.0537L6.43019 17.0707C6.47843 17.0707 6.54277 17.0199 6.54277 16.9521L6.57493 16.5455C6.57493 16.4777 6.54277 16.4269 6.47843 16.4269H4.29412C4.22978 16.4269 4.16545 16.4777 4.13329 16.5285L3.90813 16.9521Z" fill="#00ACD7"/>
+                    </svg>
+                <h2 class="text-4xl font-bold text-gray-800 mb-3">Go Programming</h2>
+                <p class="text-gray-700 font-semibold cursor-pointer hover:text-black transition-all leading-relaxed mb-6">
+                    Learn Go, the language designed for simplicity and efficiency. Build scalable, high-performance applications effortlessly.
+                </p>
+                <div class="flex gap-4">
+                    <a href="https://go.dev/doc/" 
+                    target="_blank" 
+                    class="py-3 px-6 bg-white text-teal-600 font-semibold rounded-full shadow-md hover:bg-teal-100 transition">
+                    Documentation
+                    </a>
+                    <a href="https://www.w3schools.com/go/" 
+                    target="_blank" 
+                    class="py-3 px-6 bg-white text-sky-600 font-semibold rounded-full shadow-md hover:bg-sky-100 transition">
+                    Study Resource
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+
+        <!-- Swift -->
+        <div class="relative bg-gradient-to-r from-orange-300 via-pink-300 to-red-300 p-6 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all transition-shadow mb-6">
+            <div class="absolute inset-0 bg-white bg-opacity-30 blur-lg rounded-xl"></div>
+            <div class="relative z-10 flex flex-col items-center text-center">
+                <svg width="24px" height="24px" class="w-24 h-24 mb-4" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22.1356 25.2715C18.835 27.17 14.2967 27.3651 9.73079 25.4166C6.03387 23.8505 2.96639 21.109 1 17.9767C1.94387 18.7598 3.04503 19.3865 4.22484 19.9344C8.9401 22.135 13.6544 21.9843 16.972 19.94C12.2526 16.3374 8.23626 11.6326 5.2475 7.79547C4.61799 7.16887 4.14605 6.38567 3.67412 5.68084C7.29225 8.97014 13.0343 13.1207 15.0789 14.296C10.7535 9.75321 6.8991 4.1147 7.0561 4.27103C13.8993 11.163 20.2707 15.079 20.2707 15.079C20.4815 15.1974 20.6442 15.2959 20.775 15.384C20.9129 15.0347 21.0338 14.672 21.1357 14.296C22.2368 10.3018 20.9787 5.759 18.2254 2C24.5962 5.83752 28.3721 13.0425 26.7985 19.0732C26.7575 19.2359 26.7129 19.3965 26.6648 19.5542C29.8106 23.4703 29.0008 27.6884 28.6076 26.9053C26.901 23.5801 23.7418 24.5969 22.1356 25.2715Z" fill="url(#paint0_linear_87_8231)"/>
+                    <defs>
+                    <linearGradient id="paint0_linear_87_8231" x1="15.0103" y1="2" x2="15.0103" y2="27.0013" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#F88A36"/>
+                    <stop offset="1" stop-color="#FD2020"/>
+                    </linearGradient>
+                    </defs>
+                    </svg>
+                <h2 class="text-4xl font-bold text-gray-800 mb-3">Swift Programming</h2>
+                <p class="text-gray-700 font-semibold cursor-pointer hover:text-black transition-all leading-relaxed mb-6">
+                    Discover Swift, Apple’s powerful and intuitive language for building stunning apps for iOS, macOS, watchOS, and beyond.
+                </p>
+                <div class="flex gap-4">
+                    <a href="https://swift.org/documentation/" 
+                    target="_blank" 
+                    class="py-3 px-6 bg-white text-orange-600 font-semibold rounded-full shadow-md hover:bg-orange-100 transition">
+                    Documentation
+                    </a>
+                    <a href="https://www.w3schools.com/swift/" 
+                    target="_blank" 
+                    class="py-3 px-6 bg-white text-pink-600 font-semibold rounded-full shadow-md hover:bg-pink-100 transition">
+                    Study Resource
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+</div>
+
+<!-- Section Ends-->
+
+<!-- Footer -->
+<footer class="w-full bg-black px-4 text-white pt-8 flex flex-col md:flex-row flex-wrap justify-between md:px-12 md:py-16">
+    <div class="flex flex-col items-center justify-center ml-10">
+        <img class="h-12 w-auto transition-all cursor-pointer rounded-xl" src="./Images/CJ2.png" alt="Your Company">
+        <p class="my-4 text-left"></p>
+    </div>
+    <div class="text-left">
+        <h2 class="font-bold text-xl mt-4 cursor-default text-white">Get To Know Us</h2>
+        <div class="w-[150px] h-1 border-b-2 border-yellow-400 rounded-2xl mb-4"></div>
+        <ul>
+            <li class="my-1 transition-all duration-300 text-white font-semibold hover:text-blue-400 hover:transform hover:translate-x-2">
+                <a href="about-us.html">About Us</a>
+            </li>
+            <li class="my-1 transition-all duration-300 text-white font-semibold hover:text-blue-400 hover:transform hover:translate-x-2">
+                <a href="faq.html">FAQ's</a>
+            </li>
+            <li class="my-1 transition-all duration-300 text-white font-semibold hover:text-blue-400 hover:transform hover:translate-x-2">
+                <a href="privacy-policy.html">Privacy Policy</a>
+            </li>
+            
+        </ul>
+    </div>
+    <div class="text-left">
+        <h2 class="font-bold text-xl mt-4 text-white">Tech Stack</h2>
+        <div class="w-[120px] h-1 border-b-2 border-yellow-400 rounded-2xl mb-4"></div>
+        <ul>
+            <li class="my-1 transition-all duration-300 text-white font-semibold hover:text-orange-500 hover:transform hover:translate-x-2">
+                <a href="html.html">HTML</a>
+            </li>
+            <li class="my-1 transition-all duration-300 text-white font-semibold hover:text-blue-500 hover:transform hover:translate-x-2">
+                <a href="css.html">CSS</a>
+            </li>
+            <li class="my-1 transition-all duration-300 text-white font-semibold hover:text-yellow-500 hover:transform hover:translate-x-2">
+                <a href="js.html">JavaScript</a>
+            </li>
+            <li class="my-1 transition-all duration-300 text-white font-semibold hover:text-green-500 hover:transform hover:translate-x-2">
+                <a href="db.html">Databases</a>
+            </li>
+            
+        </ul>
+    </div>
+    <div class="text-left mr-10">
+        <h2 class="font-bold text-xl mt-4 text-white">Community</h2>
+        <div class="w-[125px] h-1 border-b-2 border-yellow-400 rounded-2xl mb-4"></div>
+        <ul>
+            <li class="my-1 transition-all duration-300 text-white font-semibold hover:text-blue-400 hover:transform hover:translate-x-2 ">
+                <a href="marketplace.html">Marketplace</a>
+            </li>
+            <li class="my-1 transition-all duration-300 text-white font-semibold hover:text-blue-400 hover:transform hover:translate-x-2">
+                <a href="company.html">Company</a>
+            </li>
+            <!-- <li class="my-1 transition-all duration-300 text-black font-semibold hover:text-white hover:pl-2">
+                <a href="#">Careers</a>
+            </li> -->
+            
+        </ul>
+    </div>
+</footer>
+<!-- Footer Ends-->
+
+
+</body>
+<script>
+// Mobile menu toggle logic
+const mobileMenuButton = document.getElementById('mobile-menu-open');
+const mobileMenu = document.getElementById('mobile-menu');
+const mobileMenuCloseButton = document.getElementById('mobile-menu-close');
+
+// Open mobile menu when the mobile menu button is clicked
+mobileMenuButton.addEventListener('click', () => {
+    mobileMenu.classList.add('open'); // Show mobile menu with transition
+});
+
+// Close mobile menu when the close button is clicked
+mobileMenuCloseButton.addEventListener('click', () => {
+    mobileMenu.classList.remove('open'); // Hide mobile menu with transition
+});
+
+// Mobile Product dropdown toggle logic
+const mobileProductButton = document.getElementById('mobile-product-button');
+const mobileProductDropdown = document.getElementById('mobile-product-dropdown');
+
+mobileProductButton.addEventListener('click', () => {
+    mobileProductDropdown.classList.toggle('open'); // Toggle the dropdown
+});
+
+// Product dropdown toggle logic for desktop
+const productButton = document.getElementById('product-button');
+const productMenu = document.getElementById('product-menu');
+
+// Toggle the "Product" dropdown menu when the button is clicked (Desktop)
+productButton.addEventListener('click', () => {
+if (productMenu.classList.contains('opacity-0')) {
+    productMenu.classList.remove('opacity-0', 'translate-y-1', 'pointer-events-none');
+    productMenu.classList.add('opacity-100', 'translate-y-0');
+} else {
+    productMenu.classList.add('opacity-0', 'translate-y-1', 'pointer-events-none');
+    productMenu.classList.remove('opacity-100', 'translate-y-0');
+}
+});
+
+ 
+</script>
+</html>
