@@ -1,0 +1,83 @@
+<style>
+  /* Navbar Styling */
+  .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: auto;
+      height: 60px;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      padding: 10px 20px;
+      transition: width 0.4s ease-in-out;
+      overflow: hidden;
+      white-space: nowrap;
+  }
+
+  .menu-text {
+      font-size: 18px;
+      font-weight: bold;
+      color: blue;
+      transition: opacity 0.3s ease-in-out;
+  }
+
+  .menu-expanded {
+      width: 320px; /* Expanded width */
+      transition: width 0.4s ease-in-out;
+  }
+
+  .menu-items {
+      display: flex;
+      gap: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease-in-out;
+  }
+
+  .menu-expanded .menu-items {
+      opacity: 1;
+      pointer-events: all;
+  }
+
+  .menu-item {
+      font-size: 16px;
+      font-weight: bold;
+      color: blue;
+      transition: transform 0.3s ease-in-out;
+  }
+
+  .menu-item:hover {
+      transform: scale(1.1);
+  }
+</style>
+
+<header>
+  <nav class="navbar" id="navbar">
+      <span class="menu-text" id="menuText">MENU</span>
+      <div class="menu-items">
+          <a href="techstack.html" class="menu-item">Tech Stack</a>
+          <a href="roadmap.html" class="menu-item">Roadmap</a>
+          <a href="marketplace.html" class="menu-item">Marketplace</a>
+          <a href="company.html" class="menu-item">Company</a>
+      </div>
+  </nav>
+</header>
+
+<script>
+  const navbar = document.getElementById("navbar");
+  const menuText = document.getElementById("menuText");
+
+  navbar.addEventListener("mouseenter", () => {
+      navbar.classList.add("menu-expanded");
+      menuText.style.opacity = "0"; // Hide MENU text
+  });
+
+  navbar.addEventListener("mouseleave", () => {
+      navbar.classList.remove("menu-expanded");
+      menuText.style.opacity = "1"; // Show MENU text again
+  });
+</script>
+  
