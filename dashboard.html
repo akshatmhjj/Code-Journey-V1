@@ -143,11 +143,11 @@
     <h1 class="text-3xl font-semibold mb-6 sm:mt-1 mt-7 text-center text-[#5995fd]">
         Dashboard
     </h1>
-    <a href="#section1" class="nav-item">
+    <a href="#section1" class="nav-item mt-8">
         <span class="material-icons">account_circle</span>
         <span>Profile</span>
     </a>
-    <a href="#section2" class="nav-item">
+    <!-- <a href="#section2" class="nav-item">
         <span class="material-icons">trending_up</span>
         <span>Progress</span>
     </a>
@@ -158,27 +158,27 @@
     <a href="#section4" class="nav-item">
         <span class="material-icons">emoji_events</span>
         <span>Achievements</span>
-    </a>
+    </a> -->
     <button
         onclick="goBack()"
-        class="w-full mt-8 py-3 px-4 bg-[#5995fd] text-white rounded hover:bg-indigo-700 transition duration-300 ease-in-out flex items-center justify-center"
+        class="w-full mt-10 py-3 px-4 bg-[#5995fd] text-white rounded hover:bg-indigo-700 transition duration-300 ease-in-out flex items-center justify-center"
     >
         <span class="material-icons mr-2">arrow_back</span> Back
     </button>
     </nav>
 
 <!-- Main Content -->
-<main class="flex-1 overflow-y-scroll p-6 space-y-12" id="start">
+<main class="flex-1 overflow-hidden m-4 " id="start">
 
 <!-- Section 1: Profile -->
-<section id="section1" class="bg-gradient-to-l from-gray-600 to-gray-800 min-h-screen flex items-center justify-center py-16 px-6">
+<section id="section1" class="bg-gradient-to-l from-gray-600 to-gray-800 h-screen flex items-center justify-center py-5 px-6">
 <div class="bg-white shadow-2xl rounded-xl p-8 max-w-3xl w-full space-y-6 relative">
     <div class="flex items-center space-x-6">
     <div class="editable-photo relative w-28 h-28 rounded-full border-4 border-[#5995fd] overflow-hidden">
         <label for="photo" class="cursor-pointer w-full h-full">
         <img
             id="profileImage"
-            src="https://via.placeholder.com/150"
+            src="https://placehold.co/150"
             alt=""
             class="w-full h-full object-cover"
         />
@@ -306,11 +306,11 @@
 </section>
 
 <!-- Section 2: Progress -->
-<section id="section2" class="bg-gradient-to-r from-violet-300 to-purple-300 p-6 rounded shadow h-screen flex items-center justify-center">
+<!-- <section id="section2" class="bg-gradient-to-r from-violet-300 to-purple-300 p-6 rounded shadow h-screen flex items-center justify-center">
     <div class="w-full max-w-3xl">
     <h2 class="text-3xl font-extrabold mb-6 text-center text-indigo-600">Course Progress</h2>
     <div class="space-y-4">
-                <!-- HTML Progress -->
+                
                 <div class="flex items-center bg-gray-800 p-4 rounded-lg mb-3 shadow-sm">
                     <svg class="h-6 w-6 mr-3 text-red-400" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 16l-6-6h12z"/></svg>
                     <span class="flex-1 font-semibold text-white text-sm">HTML</span>
@@ -330,7 +330,7 @@
                     </div>
                 </div>
         
-                <!-- CSS Progress -->
+                
                 <div class="flex items-center bg-gray-800 p-4 rounded-lg mb-3 shadow-sm">
                     <svg class="h-6 w-6 mr-3 text-blue-400 " fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 16l-6-6h12z"/></svg>
                     <span class="flex-1 font-semibold text-white">CSS</span>
@@ -350,7 +350,7 @@
                     </div>
                 </div>
         
-                <!-- JavaScript Progress -->
+                
                 <div class="flex items-center bg-gray-800 p-4 rounded-lg mb-3 shadow-sm">
                     <svg class="h-6 w-6 mr-3 text-yellow-400" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 16l-6-6h12z"/></svg>
                     <span class="flex-1 font-medium sm:font-semibold text-white">
@@ -373,7 +373,7 @@
                     </div>
                 </div>
         
-                <!-- Database Progress -->
+                
                 <div class="flex items-center bg-gray-800 p-4 rounded-lg mb-3 shadow-sm">
                     <svg class="h-6 w-6 mr-3 text-green-400" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 16l-6-6h12z"/></svg>
                     <span class="flex-1 font-medium sm:font-semibold text-white">
@@ -396,10 +396,10 @@
                     </div>
                 </div>
             </div>
-</section>
+</section> -->
 
 <!-- Section 3: To-Do -->
-<section id="section3" class="bg-gradient-to-r from-red-200 to-yellow-200 p-6 rounded shadow h-screen flex items-center justify-center">
+<!-- <section id="section3" class="bg-gradient-to-r from-red-200 to-yellow-200 p-6 rounded shadow h-screen flex items-center justify-center">
     <div class="w-full max-w-lg">
     <h2 class="text-3xl font-extrabold mb-6 text-center text-indigo-600">To-Do List</h2>
     <div class="bg-gray-100 p-4 rounded-lg shadow-md">
@@ -458,14 +458,13 @@
         </button>
     </div>
     </div>
-</section>
+</section> -->
 
 <!-- Section 4: Achievements -->
-<section id="section4" class="bg-gradient-to-r from-green-200 to-blue-300 p-8 rounded-lg shadow-lg h-screen flex items-center justify-center">
+<!-- <section id="section4" class="bg-gradient-to-r from-green-200 to-blue-300 p-8 rounded-lg shadow-lg h-screen flex items-center justify-center">
     <div>
     <h2 class="text-3xl font-extrabold mb-6 text-center text-indigo-600">Achievements</h2>
     <div class="flex flex-wrap justify-center gap-4">
-        <!-- Unlocked Achievements -->
         <div class="achievement-badge bg-yellow-500 text-white px-6 py-3 rounded-full shadow-md cursor-pointer hover:bg-yellow-600 transform hover:scale-105 transition-all duration-300">
             <span>🏆 HTML Pro</span>
         </div>
@@ -473,7 +472,6 @@
             <span>🌟 CSS Master</span>
         </div>
 
-        <!-- Locked Achievements -->
         <div onclick="showPopup('JavaScript Guru')" class="achievement-badge bg-gray-400 text-gray-800 px-6 py-3 rounded-full shadow-md cursor-pointer transform hover:scale-105 transition-all duration-300">
             <span>🔒 JavaScript Guru</span>
         </div>
@@ -482,7 +480,6 @@
         </div>
     </div>
 
-    <!-- Popup -->
     <div id="achievement-popup" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
         <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full text-center">
             <h3 id="popup-title" class="text-2xl font-bold text-indigo-600 mb-4">Achievement Details</h3>
@@ -492,7 +489,7 @@
             <button onclick="closePopup()" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-500 transition-all">Close</button>
         </div>
     </div>
-</section>
+</section> -->
 
 </main>
 </div>
