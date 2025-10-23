@@ -16,6 +16,7 @@
         html, body {
         max-width: 100%;
         overflow-x: hidden;
+             padding-top: 40px; 
         }
 
         #splash {
@@ -125,6 +126,46 @@
         animation: scroll 30s linear infinite;
     }
 
+        /* === 🔔 Scrolling Notice Bar === */
+.notice-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  background: linear-gradient(90deg, #0f2027, #203a43, #2c5364);
+  color: white;
+  overflow: hidden;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.scrolling-text {
+  white-space: nowrap;
+  display: inline-block;
+  padding-left: 100%;
+  animation: scroll-left 18s linear infinite;
+  font-size: 16px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.scrolling-text a {
+  color: #00d8ff;
+  text-decoration: underline;
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+
     </style>
 </head>
 <body>
@@ -166,6 +207,15 @@
         </div>
     </div>
 </div> -->
+
+    <!-- 🔔 Fixed Scrolling Notice Bar -->
+<div class="notice-bar">
+  <div class="scrolling-text">
+    🚧 This is just a prototype for the project — The full MERN project is live at 
+    <a href="https://code-journey-zeta.vercel.app/" target="_blank">https://code-journey-zeta.vercel.app/</a> 🚀
+  </div>
+</div>
+
 
 <!--  Splash Screen -->
 <div id="splash">
@@ -1080,4 +1130,5 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 </html>
+
 
